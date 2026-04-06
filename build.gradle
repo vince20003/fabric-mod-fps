@@ -17,41 +17,55 @@ java {
     withSourcesJar()
 }
 
-// Minecraft 1.21.1, Fabric Loader 0.16.9 and Fabric API 0.107.0+1.21.1
-// Yarn mappings: 1.21.1+build.3
-// Loom: 1.8-SNAPSHOT
+defaultTasks 'build'
 
 repositories {
-    // Add repositories to retrieve artifacts from in here.
-    // To get started, an example of a Sonatype OSS search repository for Maven is provided below:
-    // maven { url "https://oss.sonatype.org/content/groups/public/" }
+    mavenCentral()
+    maven { url 'https://maven.fabricmc.net/' }
 }
 
 dependencies {
     // To change the versions see the gradle.properties file
-    minecraft "net.minecraft:minecraft:${project.minecraft_version}"
-    mappings "net.fabricmc:yarn:${project.minecraft_version}+build.${project.yarn_build}:v2"
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-    modImplementation "net.fabricmc.fabric-api:fabric-api:0.107.0+1.21.1"
+
+    // Fabric API. This is technically optional, but you probably want it.
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 }
 
 processResources {
     inputs.property "version", project.version
-
+    filteringExclude("fabric.mod.json") // Exclude fabric.mod.json from default filtering
     filesMatching("fabric.mod.json") {
         expand "version": project.version
     }
 }
 
-// Ensure that the mod's jar is produced when we run 'prepareFabricDevelopment'.
-// Otherwise, looms 'runClient' could run without the latest mod's code if no `jar` task ran yet!
-// This isn't necessary for `runClient` or `runServer` but for `prepare[...][Client/Server]` tasks
-// (which usually are called by IDEs) it might be. This is a best-practice, not strictly necessary, in most cases.
-tasks.named('jar', Jar) {
-    from getResources()
+loom {
+    runs {
+        client {
+            inherit allRuns
+            vmArg "-Dfabric.debug.api_version=true"
+        }
+
+        server {
+            inherit allRuns
+            vmArg "-Dfabric.debug.api_version=true"
+        }
+    }
 }
 
-// configure the maven publication
+architectury {
+    decompileNestedJars = true
+}
+
+configurations {
+    // Configure the provided configuration. It is not on by default.
+    // provided { transitive = false }
+}
+
+// Configure the maven publication
 publishing {
     publications {
         mavenJava(MavenPublication) {
@@ -59,12 +73,14 @@ publishing {
             artifact(remapJar) {
                 builtBy remapJar
             }
+            artifact(sourcesJar) {
+                builtBy remapSourcesJar
+            }
         }
     }
 
     // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
     repositories {
-        // Add repositories to publish to here. Showcases publishing to the local maven repository
-        // mavenLocal()
+        // Add repository here to publish to
     }
 }

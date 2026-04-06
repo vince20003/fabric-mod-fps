@@ -1,26 +1,37 @@
 {
   "schemaVersion": 1,
-  "id": "fps",
+  "id": "fps_counter_mod",
   "version": "${version}",
-  "name": "FPS Counter",
-  "description": "Displays an FPS counter in the top-left corner of the screen.",
-  "authors": ["VCVO"],
+
+  "name": "FPS Counter Mod",
+  "description": "A simple, hardcoded FPS counter in the top-left corner.",
+  "authors": [
+    "vcvo"
+  ],
   "contact": {
-    "homepage": "https://github.com/VCVO",
-    "sources": "https://github.com/VCVO/FPSMod"
+    "homepage": "https://fabricmc.net/",
+    "sources": "https://github.com/FabricMC/fabric-example-mod"
   },
-  "license": "MIT",
-  "icon": "assets/fps/icon.png",
+
+  "license": "CC0-1.0",
+  "icon": "assets/fps_counter_mod/icon.png",
+
   "environment": "client",
   "entrypoints": {
-    "client": [
-      "com.vcvo.fps.FpsModClient"
+    "main": [
+      "vcvo.fps.FpsCounterMod"
     ]
   },
+  "mixins": [
+  ],
+
   "depends": {
     "fabricloader": ">=0.16.9",
     "minecraft": "~1.21.1",
     "java": ">=21",
     "fabric-api": "*"
+  },
+  "suggests": {
+    "another-mod": "*"
   }
 }
