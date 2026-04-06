@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "fps",
+  "version": "${version}",
+  "name": "FPS Counter",
+  "description": "Displays an FPS counter in the top-left corner of the screen.",
+  "authors": ["VCVO"],
+  "contact": {
+    "homepage": "https://github.com/VCVO",
+    "sources": "https://github.com/VCVO/FPSMod"
+  },
+  "license": "MIT",
+  "icon": "assets/fps/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "com.vcvo.fps.FpsModClient"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.9",
+    "minecraft": "~1.21.1",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}

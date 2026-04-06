@@ -1,0 +1,70 @@
+plugins {
+    id 'fabric-loom' version '1.8-SNAPSHOT'
+    id 'maven-publish'
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+    archivesName = project.archives_base_name
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+    withSourcesJar()
+}
+
+// Minecraft 1.21.1, Fabric Loader 0.16.9 and Fabric API 0.107.0+1.21.1
+// Yarn mappings: 1.21.1+build.3
+// Loom: 1.8-SNAPSHOT
+
+repositories {
+    // Add repositories to retrieve artifacts from in here.
+    // To get started, an example of a Sonatype OSS search repository for Maven is provided below:
+    // maven { url "https://oss.sonatype.org/content/groups/public/" }
+}
+
+dependencies {
+    // To change the versions see the gradle.properties file
+    minecraft "net.minecraft:minecraft:${project.minecraft_version}"
+    mappings "net.fabricmc:yarn:${project.minecraft_version}+build.${project.yarn_build}:v2"
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:0.107.0+1.21.1"
+}
+
+processResources {
+    inputs.property "version", project.version
+
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version
+    }
+}
+
+// Ensure that the mod's jar is produced when we run 'prepareFabricDevelopment'.
+// Otherwise, looms 'runClient' could run without the latest mod's code if no `jar` task ran yet!
+// This isn't necessary for `runClient` or `runServer` but for `prepare[...][Client/Server]` tasks
+// (which usually are called by IDEs) it might be. This is a best-practice, not strictly necessary, in most cases.
+tasks.named('jar', Jar) {
+    from getResources()
+}
+
+// configure the maven publication
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifact(remapJar) {
+                builtBy remapJar
+            }
+        }
+    }
+
+    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
+    repositories {
+        // Add repositories to publish to here. Showcases publishing to the local maven repository
+        // mavenLocal()
+    }
+}
